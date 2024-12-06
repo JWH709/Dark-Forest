@@ -1,17 +1,26 @@
-import React from 'react'
 import '../../styles/login.css'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { Navigate } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
 
 const Login = () => {
+    const auth = useAuth();
 
-    const attemptLogin = () => {
-        window.location.href = 'http://localhost:8080/login'
+    //ToDo: Create Logout Route (leave unused for now)
+    const signOutRedirect = () => {
+        const clientId = import.meta.env.VITE_AWS_CLIENT_ID
+        const logoutUri = "http://localhost:8080/logout"
+        const cognitoDomain = import.meta.env.VITE_AWS_LOGIN_DOMAIN
+        window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
     }
-
-    const [notWorkin, setNotWorkin] = React.useState(false)
+    //ToDo: Formal error notice:
+    if(auth.error) {
+        console.log('Error: ', auth.error.message)
+    }
+    if (auth.isAuthenticated) {
+        console.log(auth.user)
+    }
 
     return (
         <>
@@ -27,14 +36,10 @@ const Login = () => {
                     }}
                 >
                     <Stack direction="row" spacing={2}>
-                        <Button variant="outlined" onClick={attemptLogin}>Login</Button>
-                        <Button variant="outlined" onClick={()=>{setNotWorkin(true)}}>Not Workin</Button>
+                        <Button variant="outlined" onClick={() => auth.signinRedirect()}>Test: AWS</Button>
                     </Stack>
                 </Box>
-            </div>    
-            {notWorkin &&
-                <Navigate to="/home"/>
-            }  
+            </div>
         </>
     )
 }

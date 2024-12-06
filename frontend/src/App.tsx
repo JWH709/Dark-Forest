@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Login from './sections/login/Login'
 import Home from './sections/home/Home'
 import Game from './sections/game/Game'
@@ -10,12 +10,14 @@ const App = () => {
   return (
     <>
       <div className="app-container">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />}/>
-          <Route path="/game" element={<Game />} />
-          <Route path="/home/lobby" element={<Lobby />}/>
-        </Routes>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />}/>
+            <Route path="/game" element={<Game />} />
+            <Route path="/home/lobby" element={<Lobby />}/>
+          </Routes>
+        </BrowserRouter>
       </div>
     </>
   )
