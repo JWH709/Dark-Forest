@@ -3,8 +3,11 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { useNavigate } from "react-router-dom";
 import axios from "axios"
+import { useAuth } from "react-oidc-context";
 
 const Home = () => {
+    const auth = useAuth()
+    console.log(auth)
     const navigate = useNavigate()
     const findJoinableLobby = React.useCallback(()=> {
         const callLobbies = async () => {

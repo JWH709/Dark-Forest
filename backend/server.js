@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const axios = require('axios');
 const dotenv = require('dotenv'); 
 const { getLobby, joinLobby, lobbies } = require('./src/lobbies/lobbies');
 const { connection } = require('./src/db/connection');
@@ -10,12 +9,6 @@ const { connection } = require('./src/db/connection');
 dotenv.config();
 
 const app = express();
-
-// Callback
-app.get('/callback', async (req, res) => {
-    const code = req.query.code;
-    res.redirect('http://localhost:5173/home')
-  });
 
 // Lobby
 app.get('/get-lobby/', (req, res) => {

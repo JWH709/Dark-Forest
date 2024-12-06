@@ -7,20 +7,14 @@ import { useAuth } from "react-oidc-context";
 const Login = () => {
     const auth = useAuth();
 
-    //ToDo: Create Logout Route (leave unused for now)
-    const signOutRedirect = () => {
-        const clientId = import.meta.env.VITE_AWS_CLIENT_ID
-        const logoutUri = "http://localhost:8080/logout"
-        const cognitoDomain = import.meta.env.VITE_AWS_LOGIN_DOMAIN
+    const handleLogout = () => {
+        const clientId = import.meta.env.VITE_AWS_CLIENT_ID;
+        const logoutUri = 'http://localhost:5173/';
+        const cognitoDomain = "https://us-east-2pqdtjw0uq.auth.us-east-2.amazoncognito.com";
+    
+        auth.removeUser();
         window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-    }
-    //ToDo: Formal error notice:
-    if(auth.error) {
-        console.log('Error: ', auth.error.message)
-    }
-    if (auth.isAuthenticated) {
-        console.log(auth.user)
-    }
+      };
 
     return (
         <>
@@ -36,7 +30,8 @@ const Login = () => {
                     }}
                 >
                     <Stack direction="row" spacing={2}>
-                        <Button variant="outlined" onClick={() => auth.signinRedirect()}>Test: AWS</Button>
+                        <Button variant="outlined" onClick={() => auth.signinRedirect()}>Log In</Button>
+                        <Button variant="outlined" onClick={() => handleLogout()}>Log Out</Button>
                     </Stack>
                 </Box>
             </div>
