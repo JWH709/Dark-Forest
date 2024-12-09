@@ -5,10 +5,23 @@ const cors = require('cors');
 const dotenv = require('dotenv'); 
 const { getLobby, joinLobby, lobbies } = require('./src/lobbies/lobbies');
 const { connection } = require('./src/db/connection');
+const { handleUserInfo } = require('./src/middleware/handleUserInfo')
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Home
+app.post('/user-info', (req, res) => {
+    const user = req.body
+    if(user && user != 'undefined') {
+        handleUserInfo(user)
+        res.json({ message: 'Got it, chief!' })
+    }
+})
 
 // Lobby
 app.get('/get-lobby/', (req, res) => {
