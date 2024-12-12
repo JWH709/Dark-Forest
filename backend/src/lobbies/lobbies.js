@@ -11,7 +11,8 @@ function Lobby(id, isActive, isFull, isInGame, players) {
 const getLobby = () => {
 
     const createNewLobby = () => {
-        const newLobby = new Lobby(lobbies.length + 1, true, false, false, []); // ToDo: Lobby Id should be more unique
+        const lobbyId = new Date().getTime()
+        const newLobby = new Lobby(lobbyId, true, false, false, []);
         lobbies.push(newLobby);
         return newLobby;
     };
@@ -30,4 +31,15 @@ const joinLobby = (lobbyId, player) => {
     lobby.players.push(player)
 };
 
-module.exports = { getLobby, joinLobby, lobbies }
+const findPlayerLobby = (playerId) => {
+    const activeLobbies = lobbies.filter(lobby => lobby.isActive);
+    for (let i = 0; i < activeLobbies.length; i++) {
+        const player = activeLobbies[i].players.find(player => player.id === playerId);
+        if (player) {
+            return {status: true, gameId: activeLobbies[i].id};
+        }
+    }
+    return {status: false, gameId: null};
+}
+
+module.exports = { getLobby, joinLobby, lobbies, findPlayerLobby }

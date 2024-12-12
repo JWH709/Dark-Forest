@@ -3,7 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const dotenv = require('dotenv'); 
-const { getLobby, joinLobby, lobbies } = require('./src/lobbies/lobbies');
+const { getLobby, joinLobby, lobbies, findPlayerLobby } = require('./src/lobbies/lobbies');
 const { connection } = require('./src/db/connection');
 const { handleUserInfo } = require('./src/middleware/handleUserInfo')
 
@@ -31,6 +31,12 @@ app.get('/get-lobby/', (req, res) => {
 app.post('/join-lobby/', (req, res) => {
     joinLobby(req.body.id, req.body.player);
     res.json('Added player to lobby');
+});
+
+app.post('/check-in-game', (req, res) => {
+    const playerId = req.body
+    const inGameStatus = findPlayerLobby(playerId)
+    res.json(inGameStatus)
 });
 
 // Start Server

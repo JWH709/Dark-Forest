@@ -19,9 +19,16 @@ class User {
     }
 }
 
+interface UserGameInProgress {
+    status: boolean;
+    gameId: number | null;
+}
+
 const Home = () => {
     const auth = useAuth()
+    const [isUserInGame, setIsUserInGame] = React.useState<UserGameInProgress>({status: false, gameId: null})
 
+    // Create or update user Cognito info:
     React.useEffect(()=>{
         if(auth.user?.profile) {
             const user = new User(auth.user.profile.sub, auth.user.profile.preferred_username, auth.user.profile.email, auth.user.profile.email_verified)
@@ -33,6 +40,19 @@ const Home = () => {
             })
         } //ToDo: catch for this
     },[auth])
+
+    // Is a user in a game already?:
+    React.useEffect(()=>{
+        if(auth.user?.profile.sub) {
+            const userId = auth.user?.profile.sub
+            const endPoint = 'http://localhost:8080/check-in-game'
+            axios.post(endPoint, userId).then(res => {
+                setIsUserInGame(res.data)
+            }).catch(error => {
+                console.log(error)
+            })
+        }
+    },[auth.user?.profile.sub])
 
     const navigate = useNavigate()
     const findJoinableLobby = React.useCallback(()=> {
@@ -51,11 +71,20 @@ const Home = () => {
 
     return (
         <>
-            <Stack spacing={2} direction="row">
-                <Button variant="contained" onClick={()=>{
-                    findJoinableLobby()  
-                }}>Play</Button>
-            </Stack>
+            {!isUserInGame.status &&
+                <Stack spacing={2} direction="row">
+                    <Button variant="contained" onClick={()=>{
+                        findJoinableLobby()  
+                    }}>Find Game</Button>
+                </Stack>
+            }
+            {isUserInGame.status &&
+                <Stack spacing={2} direction="row">
+                    <Button variant="contained" onClick={()=>{
+                        findJoinableLobby()  
+                    }}>Re-Join Game</Button>
+                </Stack>
+            }
         </>
     )
 }
