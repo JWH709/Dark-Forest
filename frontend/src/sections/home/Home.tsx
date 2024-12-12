@@ -6,12 +6,12 @@ import axios from "axios"
 import { useAuth } from "react-oidc-context";
 
 class User {
-    sub: string;
-    username: string;
-    email: string;
-    status: boolean;
+    sub: string | undefined;
+    username: string | undefined;;
+    email: string | undefined;
+    status: boolean | undefined;
 
-    constructor(sub: string, username: string, email: string, status: boolean) {
+    constructor(sub: string | undefined, username: string | undefined, email: string | undefined, status: boolean | undefined) {
         this.sub = sub;
         this.username = username;
         this.email = email;
@@ -25,14 +25,13 @@ const Home = () => {
     React.useEffect(()=>{
         if(auth.user?.profile) {
             const user = new User(auth.user.profile.sub, auth.user.profile.preferred_username, auth.user.profile.email, auth.user.profile.email_verified)
-            console.log(user)
             const endPoint = 'http://localhost:8080/user-info'
             axios.post(endPoint, user).then(res => {
                 console.log(res)
             }).catch(error => {
                 console.log(error)
             })
-        }
+        } //ToDo: catch for this
     },[auth])
 
     const navigate = useNavigate()

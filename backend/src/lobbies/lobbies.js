@@ -11,7 +11,7 @@ function Lobby(id, isActive, isFull, isInGame, players) {
 const getLobby = () => {
 
     const createNewLobby = () => {
-        const newLobby = new Lobby(lobbies.length + 1, true, false, false, []);
+        const newLobby = new Lobby(lobbies.length + 1, true, false, false, []); // ToDo: Lobby Id should be more unique
         lobbies.push(newLobby);
         return newLobby;
     };

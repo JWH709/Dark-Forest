@@ -25,7 +25,7 @@ createUserInfo = (user) => {
         [user.sub, user.username, user.email, user.status],
         (error, results) => {
           if (error) {
-            console.log("Error creating user: ", error);
+            console.error("Error creating user: ", error);
           } else {
             console.log("New user created: ", results);
           }
@@ -53,4 +53,4 @@ const handleUserInfo = (user) => {
   });
 };
 
-module.exports = { handleUserInfo }
+module.exports = { updateUserInfo, createUserInfo, handleUserInfo }

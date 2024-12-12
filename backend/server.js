@@ -19,7 +19,6 @@ app.post('/user-info', (req, res) => {
     const user = req.body
     if(user && user != 'undefined') {
         handleUserInfo(user)
-        res.json({ message: 'Got it, chief!' })
     }
 })
 
