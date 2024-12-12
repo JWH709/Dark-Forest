@@ -1,18 +1,22 @@
+const { createSystems } = require('../middleware/beforeGameStart')
+
 const lobbies = []
 
-function Lobby(id, isActive, isFull, isInGame, players) {
+function Lobby(id, isActive, isFull, isInGame, players, systems) {
     this.id = id;
     this.isActive = isActive;
     this.isFull = isFull;
     this.isInGame = isInGame;
     this.players = players;
+    this.systems = systems;
 }
 
 const getLobby = () => {
 
     const createNewLobby = () => {
         const lobbyId = new Date().getTime()
-        const newLobby = new Lobby(lobbyId, true, false, false, []);
+        const systems = createSystems()
+        const newLobby = new Lobby(lobbyId, true, false, false, [], systems);
         lobbies.push(newLobby);
         return newLobby;
     };
@@ -42,4 +46,4 @@ const findPlayerLobby = (playerId) => {
     return {status: false, gameId: null};
 }
 
-module.exports = { getLobby, joinLobby, lobbies, findPlayerLobby }
+module.exports = { getLobby, joinLobby, lobbies, findPlayerLobby, Lobby }

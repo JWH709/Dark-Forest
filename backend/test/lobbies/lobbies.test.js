@@ -1,4 +1,5 @@
-const { getLobby, joinLobby, lobbies, findPlayerLobby } = require('../../src/lobbies/lobbies') 
+const { getLobby, joinLobby, lobbies, findPlayerLobby, Lobby } = require('../../src/lobbies/lobbies') 
+const { createSystems } = require('../../src/middleware/beforeGameStart')
 // Join Lobby:
 describe('joinLobby', () => {
     it('if no lobbies exist, function should crash',()=>{
@@ -7,38 +8,52 @@ describe('joinLobby', () => {
 })
 // Get Lobby:
 describe('getLobby', () => {
-    beforeEach(() => {
-        lobbies.length = 0;
+  beforeEach(() => {
+    lobbies.length = 0;
+  });
+
+  it('should create a new lobby if no lobbies exist', () => {
+    const lobby = getLobby();
+
+    expect(lobbies.length).toBe(1);
+
+    expect(lobby.id).toBeGreaterThan(0);
+    expect(lobby.isActive).toBe(true);
+    expect(lobby.isFull).toBe(false);
+    expect(lobby.isInGame).toBe(false);
+    expect(lobby.players).toEqual([]);
+
+    expect(lobby.systems.length).toBe(12);
+    const uniqueSystems = new Set(lobby.systems);
+    expect(uniqueSystems.size).toBe(lobby.systems.length);
+
+    lobby.systems.forEach(system => {
+      const [x, y] = system.split('-').map(Number);
+      expect(Number.isInteger(x)).toBe(true);
+      expect(Number.isInteger(y)).toBe(true);
+      expect(x >= 0 && x <= 7).toBe(true);
+      expect(y >= 0 && y <= 7).toBe(true);
     });
+  });
 
-    it('should create a new lobby if no lobbies exist', () => {
-        const lobby = getLobby();
+  it('should return an available lobby if one exists that is active and not full', () => {
+    const existingLobby = new Lobby(1, true, false, false, [], createSystems());
+    lobbies.push(existingLobby);
 
-        expect(lobbies.length).toBe(1);
-        expect(lobby).toEqual(lobbies[0]);
-        expect(lobby.isActive).toBe(true);
-        expect(lobby.isFull).toBe(false);
-        expect(lobby.isInGame).toBe(false);
-        expect(lobby.players).toEqual([]);
-    });
+    const lobby = getLobby();
 
-    it('should return an existing available lobby if one exists', () => {
-        const lobby1 = getLobby(); 
-        const lobby2 = getLobby(); 
+    expect(lobby).toBe(existingLobby);
+  });
 
-        expect(lobbies.length).toBe(1); 
-        expect(lobby2).toEqual(lobby1); 
-    });
+  it('should create a new lobby if no active, available lobbies exist', () => {
+    const existingLobby = new Lobby(1, true, true, false, [], createSystems());
+    lobbies.push(existingLobby);
 
-    it('should create a new lobby if no available lobbies exist', () => {
-        const lobby1 = getLobby();
-        lobby1.isFull = true; 
+    const lobby = getLobby();
 
-        const lobby2 = getLobby(); 
-
-        expect(lobbies.length).toBe(2); 
-        expect(lobby2).not.toEqual(lobby1); 
-    });
+    expect(lobby.id).not.toBe(existingLobby.id);
+    expect(lobbies.length).toBe(2);
+  });
 });
 // Find Player Lobby:
 describe('findPlayerLobby', () => {
