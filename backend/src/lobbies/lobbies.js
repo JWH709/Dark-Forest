@@ -46,4 +46,9 @@ const findPlayerLobby = (playerId) => {
     return {status: false, gameId: null};
 }
 
-module.exports = { getLobby, joinLobby, lobbies, findPlayerLobby, Lobby }
+const getLobbyInfo = (lobbyId) => {
+    const lobby = lobbies.find(lobby => lobby.id == lobbyId)
+    return lobby
+}
+
+module.exports = { getLobby, joinLobby, lobbies, findPlayerLobby, Lobby, getLobbyInfo }

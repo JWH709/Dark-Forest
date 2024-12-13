@@ -27,6 +27,7 @@ interface UserGameInProgress {
 
 const Home = () => {
     const auth = useAuth()
+    console.log(auth)
     const navigate = useNavigate()
     const [isUserInGame, setIsUserInGame] = React.useState<UserGameInProgress>({status: false, gameId: null})
 
@@ -34,7 +35,7 @@ const Home = () => {
     React.useEffect(()=>{
         if(auth.user?.profile) {
             const user = new User(auth.user.profile.sub, auth.user.profile.preferred_username, auth.user.profile.email, auth.user.profile.email_verified)
-            const endPoint = 'http://localhost:8080/user-info'
+            const endPoint = `${import.meta.env.VITE_URL}/user-info`
             axios.post(endPoint, user).then(res => {
                 console.log(res)
             }).catch(error => {
@@ -47,7 +48,7 @@ const Home = () => {
     React.useEffect(() => {
         if (auth.user?.profile.sub) {
             const userId = auth.user.profile.sub;
-            const endPoint = 'http://localhost:8080/check-in-game';
+            const endPoint = `${import.meta.env.VITE_URL}/check-in-game`;
     
             axios
                 .post(endPoint, { userId })
@@ -63,8 +64,8 @@ const Home = () => {
     // Find a Game:
     const joinLobby = React.useCallback(()=> {
         const user = {id: auth.user?.profile.sub, username: auth.user?.profile.preferred_username}
-        const endPoint = 'http://localhost:8080/join-lobby'
-        axios.post(endPoint, user).then(res =>{
+        const endPoint = `${import.meta.env.VITE_URL}/join-lobby`
+        axios.post(endPoint, {user}).then(res =>{
             setIsUserInGame({status: true, gameId: res.data})
             navigate(`/lobby/${res.data}`)
         }).catch(error => {
@@ -84,7 +85,7 @@ const Home = () => {
             {isUserInGame.status &&
                 <Stack spacing={2} direction="row">
                     <Button variant="contained" onClick={()=>{
-                        // rejoinLobby()  
+                        // ToDo: rejoinLobby()  
                     }}>Re-Join Game</Button>
                 </Stack>
             }
