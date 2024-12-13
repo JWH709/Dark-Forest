@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { useNavigate } from "react-router-dom";
 import axios from "axios"
 import { useAuth } from "react-oidc-context";
+import { useNavigate } from 'react-router-dom';
 
 class User {
     sub: string | undefined;
@@ -26,6 +27,7 @@ interface UserGameInProgress {
 
 const Home = () => {
     const auth = useAuth()
+    const navigate = useNavigate()
     const [isUserInGame, setIsUserInGame] = React.useState<UserGameInProgress>({status: false, gameId: null})
 
     // Create or update user Cognito info:
@@ -41,47 +43,48 @@ const Home = () => {
         } //ToDo: catch for this
     },[auth])
 
-    // Is a user in a game already?:
-    React.useEffect(()=>{
-        if(auth.user?.profile.sub) {
-            const userId = auth.user?.profile.sub
-            const endPoint = 'http://localhost:8080/check-in-game'
-            axios.post(endPoint, userId).then(res => {
-                setIsUserInGame(res.data)
-            }).catch(error => {
-                console.log(error)
-            })
+    // ToDo: this is not working... Why?
+    React.useEffect(() => {
+        if (auth.user?.profile.sub) {
+            const userId = auth.user.profile.sub;
+            const endPoint = 'http://localhost:8080/check-in-game';
+    
+            axios
+                .post(endPoint, { userId })
+                .then((res) => {
+                    setIsUserInGame(res.data);
+                })
+                .catch((error) => {
+                    console.log('Error in check-in-game:', error);
+                });
         }
-    },[auth.user?.profile.sub])
+    }, [auth.user?.profile.sub]);
 
-    const navigate = useNavigate()
-    const findJoinableLobby = React.useCallback(()=> {
-        const callLobbies = async () => {
-            const endPoint = 'http://localhost:8080/get-lobby'
-            try {
-                const res = await axios.get(endPoint)
-                navigate('./lobby', { state: { lobby: res.data }})  
-            } catch(error) {
-                console.log(error)
-            }
-        }
-
-        callLobbies()
-    },[navigate])
+    // Find a Game:
+    const joinLobby = React.useCallback(()=> {
+        const user = {id: auth.user?.profile.sub, username: auth.user?.profile.preferred_username}
+        const endPoint = 'http://localhost:8080/join-lobby'
+        axios.post(endPoint, user).then(res =>{
+            setIsUserInGame({status: true, gameId: res.data})
+            navigate(`/lobby/${res.data}`)
+        }).catch(error => {
+            console.log(error)
+        })
+    },[])
 
     return (
         <>
             {!isUserInGame.status &&
                 <Stack spacing={2} direction="row">
                     <Button variant="contained" onClick={()=>{
-                        findJoinableLobby()  
+                        joinLobby()  
                     }}>Find Game</Button>
                 </Stack>
             }
             {isUserInGame.status &&
                 <Stack spacing={2} direction="row">
                     <Button variant="contained" onClick={()=>{
-                        findJoinableLobby()  
+                        // rejoinLobby()  
                     }}>Re-Join Game</Button>
                 </Stack>
             }

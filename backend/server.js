@@ -23,18 +23,18 @@ app.post('/user-info', (req, res) => {
 })
 
 // Lobby
-app.get('/get-lobby/', (req, res) => {
-    const lobby = getLobby();
-    res.json(lobby);
-});
-
 app.post('/join-lobby/', (req, res) => {
-    joinLobby(req.body.id, req.body.player);
-    res.json('Added player to lobby');
+    const lobby = getLobby();
+    lobby.systems[lobby.players.length].owner = req.body.id
+    const playerSystem = lobby.systems[lobby.players.length]
+    const player = {id: req.body.id, name: req.body.username, system: playerSystem}
+    joinLobby(lobby.id, player);
+    res.json(lobby.id)
 });
 
 app.post('/check-in-game', (req, res) => {
     const playerId = req.body
+    console.log(req.body)
     const inGameStatus = findPlayerLobby(playerId)
     res.json(inGameStatus)
 });

@@ -3,8 +3,8 @@ const createSystems = () => {
   do {
     let x = Math.floor(Math.random() * 8);
     let y = Math.floor(Math.random() * 8);
-    let system = `${x}-${y}`;
-    let existingSystem = systems.find((s) => s === system);
+    let system = {location: `${x}-${y}`, owner: null};
+    let existingSystem = systems.find((s) => s.location === system.location);
     if (existingSystem === undefined) {
       systems.push(system);
     }

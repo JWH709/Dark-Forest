@@ -10,11 +10,12 @@ describe('createSystems', () => {
       expect(uniqueSystems.size).toBe(systems.length);
   
       systems.forEach(system => {
-        const [x, y] = system.split('-').map(Number);
+        const [x, y] = system.location.split('-').map(Number);
         expect(Number.isInteger(x)).toBe(true);
         expect(Number.isInteger(y)).toBe(true);
         expect(x >= 0 && x <= 7).toBe(true);
         expect(y >= 0 && y <= 7).toBe(true);
+        expect(system.owner == null).toBe(true)
       });
     });
   });
