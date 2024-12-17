@@ -34,7 +34,6 @@ app.post('/join-lobby/', (req, res) => {
 
 app.post('/check-in-game', (req, res) => {
     const playerId = req.body.userId
-    console.log(playerId)
     const inGameStatus = findPlayerLobby(playerId)
     res.json(inGameStatus)
 });
@@ -46,12 +45,23 @@ app.post('/get-lobby-info', (req, res) => {
 
 // Start Server
 const server = http.createServer(app);
+
+//Websocket
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:5173',
         methods: ['GET', 'POST'],
     },
 });
+
+io.on('connection', (socket) => {
+    console.log(`Socket ID: ${socket.id}`)
+
+    socket.on('get_lobby', (data) => {
+        const lobby = getLobbyInfo(data.id)
+        socket.broadcast.emit('sync_lobby', lobby)
+    })
+})
 
 server.listen(8080, () => {
     console.log('Server is running on http://localhost:8080');

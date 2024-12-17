@@ -6,6 +6,7 @@ import axios from "axios"
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from 'react-router-dom';
 //ToDo: add loading icon for button so that it doesn't get all wonky while it's trying to check if a user is in a game or not
+//ToDo: when I use back in the browser, OIDC freaks out and breaks. I think this is because of how I'm handling callback. Find a fix for this
 
 class User {
     sub: string | undefined;
