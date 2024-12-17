@@ -2,6 +2,7 @@ import React from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from "react-oidc-context";
+import '../../styles/lobby.css'
 //MatUI:
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -28,7 +29,7 @@ interface Lobby {
     systems: System[];
 }
 
-const socket: Socket = io.connect(import.meta.env.VITE_URL)
+const socket: Socket = io(import.meta.env.VITE_URL)
 
 const Lobby = () => {
     const auth = useAuth() //The user
@@ -43,13 +44,12 @@ const Lobby = () => {
             setLobbyInfo(data)
         })
     },[])
-
     return (
             <div className='lobby-wrapper'>
                 <div className='lobby-list-wrapper'>
                     {lobbyInfo?.players.map((player)=> { //ToDo: on inital render, this is null, need to add a check to re-render once lobbyInfo isn't null
                         return (
-                        <div className='lobby-list-item'>
+                        <div className='lobby-list-item' key={`${lobbyInfo.id} ${player.name}`}>
                             <AccountCircleRoundedIcon />
                             <h1 className='username'>{player.name}</h1>
                             {player.id == auth.user?.profile.sub &&
