@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import axios from "axios"
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from 'react-router-dom';
+//ToDo: add loading icon for button so that it doesn't get all wonky while it's trying to check if a user is in a game or not
 
 class User {
     sub: string | undefined;
@@ -44,22 +45,22 @@ const Home = () => {
         } //ToDo: catch for this
     },[auth])
 
-    // ToDo: this is not working... Why?
     React.useEffect(() => {
-        if (auth.user?.profile.sub) {
-            const userId = auth.user.profile.sub;
+        if (auth.user?.profile.sub != undefined) {
+            const userId = auth.user?.profile.sub
             const endPoint = `${import.meta.env.VITE_URL}/check-in-game`;
     
             axios
                 .post(endPoint, { userId })
                 .then((res) => {
+                    console.log(res.data)
                     setIsUserInGame(res.data);
                 })
                 .catch((error) => {
                     console.log('Error in check-in-game:', error);
                 });
         }
-    }, [auth.user?.profile.sub]);
+    }, [auth]);
 
     // Find a Game:
     const joinLobby = React.useCallback(()=> {
@@ -85,7 +86,7 @@ const Home = () => {
             {isUserInGame.status &&
                 <Stack spacing={2} direction="row">
                     <Button variant="contained" onClick={()=>{
-                        // ToDo: rejoinLobby()  
+                        navigate(`/lobby/${isUserInGame.gameId}`)
                     }}>Re-Join Game</Button>
                 </Stack>
             }

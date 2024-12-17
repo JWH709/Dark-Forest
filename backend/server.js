@@ -33,8 +33,8 @@ app.post('/join-lobby/', (req, res) => {
 });
 
 app.post('/check-in-game', (req, res) => {
-    const playerId = req.body
-    console.log(req.body.userId)
+    const playerId = req.body.userId
+    console.log(playerId)
     const inGameStatus = findPlayerLobby(playerId)
     res.json(inGameStatus)
 });
