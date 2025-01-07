@@ -1,5 +1,5 @@
 import React from 'react';
-import { io, Socket } from 'socket.io-client';
+import socket from '../../configs/socket';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from "react-oidc-context";
 import '../../styles/lobby.css'
@@ -29,25 +29,34 @@ interface Lobby {
     systems: System[];
 }
 
-const socket: Socket = io(import.meta.env.VITE_URL)
-
 const Lobby = () => {
     const auth = useAuth() //The user
     const { id } = useParams();
-    socket.emit('get_lobby', {id: id})
     const [lobbyInfo, setLobbyInfo] = React.useState<Lobby | null>(null);
     const navigate = useNavigate();
 
     // Get Lobby info with websocket:
-    React.useEffect(()=>{
-        socket.on('sync_lobby', (data) => {
-            setLobbyInfo(data)
-        })
-    },[])
+    React.useEffect(() => {
+        if (id) {
+            socket.emit('get_lobby', { id });
+    
+            const syncLobbyHandler = (data: Lobby) => {
+                setLobbyInfo(data);
+            };
+    
+            socket.on('sync_lobby', syncLobbyHandler);
+    
+            return () => {
+                socket.off('sync_lobby', syncLobbyHandler);
+            };
+        }
+    }, [id]);
+    
+    
     return (
             <div className='lobby-wrapper'>
                 <div className='lobby-list-wrapper'>
-                    {lobbyInfo?.players.map((player)=> { //ToDo: on inital render, this is null, need to add a check to re-render once lobbyInfo isn't null
+                    {lobbyInfo?.players.map((player)=> {
                         return (
                         <div className='lobby-list-item' key={`${lobbyInfo.id} ${player.name}`}>
                             <AccountCircleRoundedIcon />

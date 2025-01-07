@@ -55,13 +55,18 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    console.log(`Socket ID: ${socket.id}`)
+    console.log(`Socket ID: ${socket.id}`);
 
     socket.on('get_lobby', (data) => {
-        const lobby = getLobbyInfo(data.id)
-        socket.broadcast.emit('sync_lobby', lobby)
-    })
-})
+        const lobby = getLobbyInfo(data.id);
+        console.log("Lobby info:", lobby);
+        if (lobby) {
+            socket.emit('sync_lobby', lobby);
+        } else {
+            console.error("No lobby found for ID:", data.id);
+        }
+    });
+});
 
 server.listen(8080, () => {
     console.log('Server is running on http://localhost:8080');
