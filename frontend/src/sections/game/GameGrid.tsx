@@ -1,8 +1,17 @@
 import GameSquare from "./GameSquare";
 import System from "./System";
 
+interface GameGridProps {
+  systems: System[] | undefined
+}
 
-const GameGrid = () => {
+interface System {
+  location: string;
+  owner: string;
+}
+
+
+const GameGrid = ({ systems }: GameGridProps) => {
   const gridSize = 8;
   const squareSize = 30;
 
@@ -13,7 +22,21 @@ const GameGrid = () => {
       const x = col * squareSize - (gridSize * squareSize) / 2 + squareSize / 2;
       const z = row * squareSize - (gridSize * squareSize) / 2 + squareSize / 2;
 
-      const hasSystem = Math.random() > 0.7;
+      const checkSystem = (systems: System[]) => {
+        const currentSystem: System = {location: `${row}-${col}`, owner: 'none'}
+        const targetSystem = systems.find((s) => s.location === currentSystem.location)
+        if(targetSystem != undefined) {
+          return true
+        } else {
+          return false
+        }
+      }
+
+      let hasSystem: boolean = false
+
+      if(systems) {
+        hasSystem = checkSystem(systems)
+      }
 
       squares.push(
         <GameSquare key={`${row}-${col}`} position={[x, 0, z]} size={squareSize} name={`${row}-${col}`}>

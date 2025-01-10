@@ -30,7 +30,7 @@ interface Lobby {
 }
 
 const Lobby = () => {
-    const auth = useAuth() //The user
+    const auth = useAuth()
     const { id } = useParams();
     const [lobbyInfo, setLobbyInfo] = React.useState<Lobby | null>(null);
     const navigate = useNavigate();
@@ -51,8 +51,7 @@ const Lobby = () => {
             };
         }
     }, [id]);
-    
-    
+    // ToDo: auto-start game on lobby filled
     return (
             <div className='lobby-wrapper'>
                 <div className='lobby-list-wrapper'>
@@ -73,6 +72,7 @@ const Lobby = () => {
                 </div>
                 <Stack spacing={2} direction="row">
                     <Button variant="contained" onClick={() => navigate('/home')}>Back to Home</Button>
+                    <Button variant='contained' onClick={() => navigate(`/game/${id}`)}>Start Game</Button>
                 </Stack>
             </div>
     );
