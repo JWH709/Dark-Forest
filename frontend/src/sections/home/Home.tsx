@@ -5,8 +5,7 @@ import Button from '@mui/material/Button';
 import axios from "axios"
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from 'react-router-dom';
-//ToDo: add loading icon for button so that it doesn't get all wonky while it's trying to check if a user is in a game or not
-//ToDo: when I use back in the browser, OIDC freaks out and breaks. I think this is because of how I'm handling callback. Find a fix for this
+
 
 class User {
     sub: string | undefined;
@@ -43,7 +42,7 @@ const Home = () => {
             }).catch(error => {
                 console.log(error)
             })
-        } //ToDo: catch for this
+        }
     },[auth])
 
     React.useEffect(() => {
@@ -65,15 +64,18 @@ const Home = () => {
 
     // Find a Game:
     const joinLobby = React.useCallback(()=> {
-        const user = {id: auth.user?.profile.sub, username: auth.user?.profile.preferred_username}
-        const endPoint = `${import.meta.env.VITE_URL}/join-lobby`
-        axios.post(endPoint, {user}).then(res =>{
-            setIsUserInGame({status: true, gameId: res.data})
-            navigate(`/lobby/${res.data}`)
-        }).catch(error => {
-            console.log(error)
-        })
-    },[])
+        if(auth.user?.profile.sub != undefined)
+            {
+            const user = {id: auth.user?.profile.sub, username: auth.user?.profile.preferred_username}
+            const endPoint = `${import.meta.env.VITE_URL}/join-lobby`
+            axios.post(endPoint, {user}).then(res =>{
+                setIsUserInGame({status: true, gameId: res.data})
+                navigate(`/lobby/${res.data}`)
+            }).catch(error => {
+                console.log(error)
+            })
+        }
+    },[auth])
 
     return (
         <>
