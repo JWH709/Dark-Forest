@@ -1,5 +1,5 @@
 import GameSquare from "./GameSquare";
-import System from "./System";
+import SystemComponent from "./System";
 
 interface GameGridProps {
   systems: System[] | undefined
@@ -26,13 +26,13 @@ const GameGrid = ({ systems }: GameGridProps) => {
         const currentSystem: System = {location: `${row}-${col}`, owner: 'none'}
         const targetSystem = systems.find((s) => s.location === currentSystem.location)
         if(targetSystem != undefined) {
-          return true
+          return targetSystem
         } else {
           return false
         }
       }
 
-      let hasSystem: boolean = false
+      let hasSystem: boolean | System = false
 
       if(systems) {
         hasSystem = checkSystem(systems)
@@ -41,11 +41,12 @@ const GameGrid = ({ systems }: GameGridProps) => {
       squares.push(
         <GameSquare key={`${row}-${col}`} position={[x, 0, z]} size={squareSize} name={`${row}-${col}`}>
           {hasSystem && (
-            <System
+            <SystemComponent
               sunColor={["yellow", "green", "blue", "red", "purple"][Math.floor(Math.random() * 5)] as "yellow" | "green" | "blue" | "red" | "purple"}
               sunSize={3}
               numPlanets={Math.floor(Math.random() * 4) + 3} 
               squareSize={squareSize} 
+              systemInfo={hasSystem}
             />
           )}
         </GameSquare>

@@ -1,15 +1,44 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from "react";
 import Sun from "./Sun";
 import Planet from "./Planet";
+import { useAuth } from "react-oidc-context";
 
 interface SystemProps {
   sunColor: "yellow" | "green" | "blue" | "red" | "purple"; // Sun color
   sunSize: number; // Size of the sun
   numPlanets: number; // Number of planets
   squareSize: number; // Size of the GameSquare
+  systemInfo: System
 }
 
-const System = ({ sunColor, numPlanets, squareSize }: SystemProps) => {
+interface System {
+  location: string;
+  owner: string;
+}
+
+const SystemComponent = ({ sunColor, numPlanets, squareSize, systemInfo }: SystemProps) => {
+  const auth = useAuth()
+  console.log(auth)
+  const [authLoaded, setAuthLoaded] = React.useState<boolean>(false)
+  const [isUserSystem, setIsUserSystem] = React.useState<boolean>(false)
   const randomAngle = () => Math.random() * 2 * Math.PI;
+
+  React.useEffect(()=>{
+    if(auth) {
+      setAuthLoaded(true)
+    }
+    if(authLoaded) {
+      const userId = auth.user?.profile.sub
+      console.log(systemInfo.owner)
+      console.log(userId)
+      if(userId == systemInfo.owner) {
+        setIsUserSystem(true)
+      }
+    }
+
+  },[setAuthLoaded, auth, authLoaded])
+  
 
   // Calculate maximum orbit radius (should fit inside the GameSquare)
   const maxOrbitRadius = (squareSize - 2) / 2;
@@ -26,24 +55,28 @@ const System = ({ sunColor, numPlanets, squareSize }: SystemProps) => {
   }));
 
   return (
-    <group>
-      {/* Sun */}
-      <Sun color={sunColor} size={1.0} />
-
-      {/* Planets */}
-      {planets.map((planet, index) => (
-        <Planet
-          key={index}
-          initialAngle={planet.initialAngle}
-          tilt={planet.tilt}
-          orbitRadius={planet.orbitRadius}
-          orbitalSpeed={planet.orbitalSpeed}
-          args={[0.5, 32, 32]}
-          color={planet.color}
-        />
-      ))}
-    </group>
+    <>
+      {isUserSystem && (
+        <group>
+          {/* Sun */}
+          <Sun color={sunColor} size={1.0} />
+          {/* Planets */}
+          {planets.map((planet, index) => (
+            <Planet
+              key={index}
+              initialAngle={planet.initialAngle}
+              tilt={planet.tilt}
+              orbitRadius={planet.orbitRadius}
+              orbitalSpeed={planet.orbitalSpeed}
+              args={[0.5, 32, 32]}
+              color={planet.color}
+            />
+          ))}
+        </group>
+      )}
+    </>
   );
+  
 };
 
-export default System;
+export default SystemComponent;
