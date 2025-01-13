@@ -1,17 +1,24 @@
 import React from 'react';
 import { Line } from '@react-three/drei';
 import { Plane } from '@react-three/drei';
+import { useAuth } from "react-oidc-context";
 
 interface GameSquareProps {
   position: [number, number, number]; // Position in the 3D space
   size: number; // Size of the square
   children?: React.ReactNode; // Optional content inside the square
   name: string
+  hasSystem: boolean | System
+}
+interface System {
+  location: string;
+  owner: string;
 }
 
-const GameSquare = ({ position, size, children, name }: GameSquareProps) => {
+const GameSquare = ({ position, size, children, hasSystem }: GameSquareProps) => {
   const [isHovered, setIsHovered] = React.useState<boolean>(false);
   const halfSize = size / 2;
+  const auth = useAuth()
 
   // Define the vertices for the border
   const points: readonly [number, number, number][] = [
@@ -32,7 +39,16 @@ const GameSquare = ({ position, size, children, name }: GameSquareProps) => {
         onPointerOut={() => setIsHovered(false)}
         visible={false} // Invisible but still detects pointer events
         onClick={()=> {
-            console.log(name)
+            if(hasSystem) {
+              if(auth.user?.profile.sub != hasSystem?.owner) {
+                console.log('you win I guess')
+              } else if(auth.user?.profile.sub == hasSystem?.owner) {
+                console.log('thats ur system')
+              }
+            } else {
+              console.log('guess again')
+            }
+            /* Call the server if it's you're turn and guess a square */
         }}
       />
       

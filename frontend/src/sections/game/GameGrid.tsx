@@ -39,7 +39,7 @@ const GameGrid = ({ systems }: GameGridProps) => {
       }
 
       squares.push(
-        <GameSquare key={`${row}-${col}`} position={[x, 0, z]} size={squareSize} name={`${row}-${col}`}>
+        <GameSquare key={`${row}-${col}`} position={[x, 0, z]} size={squareSize} name={`${row}-${col}`} hasSystem={hasSystem}>
           {hasSystem && (
             <SystemComponent
               sunColor={["yellow", "green", "blue", "red", "purple"][Math.floor(Math.random() * 5)] as "yellow" | "green" | "blue" | "red" | "purple"}

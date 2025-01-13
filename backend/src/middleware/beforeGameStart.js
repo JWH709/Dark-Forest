@@ -1,3 +1,21 @@
+function Game(id, systems, turnOrder, playerInfo, turnNumber) {
+  this.id = id;
+  this.systems = systems;
+  this.turnOrder = turnOrder;
+  this.playerInfo = playerInfo;
+  this.turnNumber = turnNumber;
+}
+
+function shuffleArray(array) {
+  const copiedArray = [...array];
+  
+  for (let i = copiedArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copiedArray[i], copiedArray[j]] = [copiedArray[j], copiedArray[i]];
+  }
+  return copiedArray;
+}
+
 const createSystems = () => {
   let systems = [];
   do {
@@ -13,4 +31,21 @@ const createSystems = () => {
   return systems;
 };
 
-module.exports = { createSystems }
+const createGameState = (lobbyInfo) => {
+  const shuffledArray = shuffleArray(lobbyInfo.players)
+  const getTurnOrder = (players) => {
+    let turnOrder = []
+    for(let x = 0; x < players.length; x++) {
+      turnOrder.push({id: players.id, turnOrder: x})
+    }
+    return turnOrder
+  }
+
+  const turnOrder = getTurnOrder(shuffledArray)
+
+  const game = new Game(lobbyInfo.id, lobbyInfo.systems, turnOrder, lobbyInfo.players, 1)
+
+  return game
+}
+
+module.exports = { createSystems, createGameState, shuffleArray, Game }
